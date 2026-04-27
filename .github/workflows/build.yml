@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Upload JAR
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cobble-pc-delete
           path: build/libs/cobble-pc-delete-1.0.0.jar

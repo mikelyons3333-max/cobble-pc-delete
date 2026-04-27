@@ -99,3 +99,74 @@ object CobblePCDeleteMod : ModInitializer {
     private fun deleteBox(ctx: CommandContext<ServerCommandSource>): Int {
         val pc = getPC(ctx) ?: return 0
         val boxIndex = IntegerArgumentType.getInteger(ctx, "boxNumber") - 1
+        if (boxIndex >= pc.boxes.size) {
+            ctx.source.sendError(Text.literal("Box ${boxIndex + 1} does not exist."))
+            return 0
+        }
+        val box = pc.boxes[boxIndex]
+        var count = 0
+        for (slot in 0 until box.size) {
+            if (box[slot] != null) { box[slot] = null; count++ }
+        }
+        ctx.source.sendFeedback({ Text.literal("§aDeleted §e$count§a Pokemon from Box ${boxIndex + 1}.") }, false)
+        return count
+    }
+
+    private fun deleteSpecies(ctx: CommandContext<ServerCommandSource>): Int {
+        val pc = getPC(ctx) ?: return 0
+        val speciesName = StringArgumentType.getString(ctx, "speciesName").lowercase()
+        val targets = collectPokemon(pc) { it.species.name.lowercase() == speciesName }
+        if (targets.isEmpty()) {
+            ctx.source.sendFeedback({ Text.literal("§eNo ${speciesName.replaceFirstChar { it.uppercase() }} found in your PC.") }, false)
+            return 0
+        }
+        val count = removePokemon(targets)
+        ctx.source.sendFeedback({ Text.literal("§aDeleted §e$count§a ${speciesName.replaceFirstChar { it.uppercase() }}(s).") }, false)
+        return count
+    }
+
+    private fun deleteBelowLevel(ctx: CommandContext<ServerCommandSource>): Int {
+        val pc = getPC(ctx) ?: return 0
+        val threshold = IntegerArgumentType.getInteger(ctx, "level")
+        val targets = collectPokemon(pc) { it.level < threshold }
+        if (targets.isEmpty()) {
+            ctx.source.sendFeedback({ Text.literal("§eNo Pokemon below level $threshold found.") }, false)
+            return 0
+        }
+        val count = removePokemon(targets)
+        ctx.source.sendFeedback({ Text.literal("§aDeleted §e$count§a Pokemon below level $threshold.") }, false)
+        return count
+    }
+
+    private fun deleteDuplicates(ctx: CommandContext<ServerCommandSource>): Int {
+        val pc = getPC(ctx) ?: return 0
+        val all = collectPokemon(pc) { true }
+        val bestBySpecies = mutableMapOf<String, Triple<PCBox, Int, Pokemon>>()
+        for (entry in all) {
+            val key = entry.third.species.name.lowercase()
+            val existing = bestBySpecies[key]
+            if (existing == null || entry.third.level > existing.third.level) bestBySpecies[key] = entry
+        }
+        val keepers = bestBySpecies.values.map { it.third.uuid }.toSet()
+        val targets = all.filter { it.third.uuid !in keepers }
+        if (targets.isEmpty()) {
+            ctx.source.sendFeedback({ Text.literal("§eNo duplicates found.") }, false)
+            return 0
+        }
+        val count = removePokemon(targets)
+        ctx.source.sendFeedback({ Text.literal("§aDeleted §e$count§a duplicates. Kept the highest-level of each species.") }, false)
+        return count
+    }
+
+    private fun deleteAll(ctx: CommandContext<ServerCommandSource>): Int {
+        val pc = getPC(ctx) ?: return 0
+        var count = 0
+        for (box in pc) {
+            for (slot in 0 until box.size) {
+                if (box[slot] != null) { box[slot] = null; count++ }
+            }
+        }
+        ctx.source.sendFeedback({ Text.literal("§cDeleted §e$count§c Pokemon from your entire PC.") }, false)
+        return count
+    }
+}

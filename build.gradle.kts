@@ -25,7 +25,7 @@ dependencies {
     minecraft("com.mojang:minecraft:1.21.1")
     mappings("net.fabricmc:yarn:1.21.1+build.3:v2")
     modImplementation("net.fabricmc:fabric-loader:0.16.9")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.106.1+1.21.1")
+   modImplementation("net.fabricmc.fabric-api:fabric-api:0.110.5+1.21.1")
     modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
     modCompileOnly("com.cobblemon:cobblemon-fabric:1.7.3+1.21.1")
 }

@@ -13,8 +13,12 @@ base {
 repositories {
     mavenCentral()
     maven("https://maven.fabricmc.net/")
-    maven("https://maven.cobblemon.dev/releases")
-    maven("https://maven.impactdev.net/repository/development/")
+    maven {
+        url = uri("https://maven.cobblemon.dev/releases")
+        content {
+            includeGroup("com.cobblemon")
+        }
+    }
 }
 
 dependencies {

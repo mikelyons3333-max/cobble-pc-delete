@@ -13,21 +13,14 @@ base {
 repositories {
     mavenCentral()
     maven("https://maven.fabricmc.net/")
-    maven {
-        url = uri("https://maven.cobblemon.dev/releases")
-        content {
-            includeGroup("com.cobblemon")
-        }
-    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:1.21.1")
     mappings("net.fabricmc:yarn:1.21.1+build.3:v2")
     modImplementation("net.fabricmc:fabric-loader:0.16.9")
-   modImplementation("net.fabricmc.fabric-api:fabric-api:0.114.0+1.21.1")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.114.0+1.21.1")
     modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
-    modCompileOnly("com.cobblemon:cobblemon-fabric:1.7.3+1.21.1")
 }
 
 tasks.processResources {
